@@ -56,7 +56,7 @@ const Social = () => {
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "You logged in with Google!",
+          title: "You logged in with Github!",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -65,7 +65,7 @@ const Social = () => {
       Swal.fire({
         position: "top-end",
         icon: "success",
-        title: "You logged in with Google!",
+        title: "You logged in with Github!",
         showConfirmButton: false,
         timer: 1500,
       });
