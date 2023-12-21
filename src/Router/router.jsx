@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Dashboard from "../layout/Dashboard";
 import Main from "../layout/Main";
+import AboutUs from "../pages/AboutUs/AboutUs";
+import Blog from "../pages/Blog/Blog";
+import ContactUs from "../pages/ContactUs/ContactUs";
 import AddTask from "../pages/Dashboard/AddTask/AddTask";
 import TaskManager from "../pages/Dashboard/AllTask/TaskManager";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
@@ -19,6 +22,21 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
+
+      {
+        path: "/blog",
+        element: <Blog />,
+      },
+      {
+        path: "/aboutUs",
+        element: <AboutUs />,
+      },
+
+      {
+        path: "/contactUs",
+        element: <ContactUs />,
+      },
+
       {
         path: "/login",
         element: <Login />,
@@ -39,7 +57,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "dashboardHome",
+        path: "userHome",
         element: (
           <PrivateRoute>
             <DashboardHome />
@@ -58,7 +76,7 @@ export const router = createBrowserRouter([
         path: "allTask",
         element: (
           <PrivateRoute>
-            <TaskManager/>
+            <TaskManager />
           </PrivateRoute>
         ),
       },

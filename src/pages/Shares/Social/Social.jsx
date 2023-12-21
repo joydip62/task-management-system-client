@@ -46,6 +46,7 @@ const Social = () => {
   
   const handleGithubSignIn = () => {
     githubLogin().then((res) => {
+      console.log(res);
       const userInfo = {
         email: res.user?.email,
         name: res.user?.displayName,
@@ -83,7 +84,7 @@ const Social = () => {
           Continue with Google
         </button>
 
-        <button className="btn btn-outline" onClick={handleGithubSignIn}>
+        <button className="btn btn-outline bg-black text-white" onClick={handleGithubSignIn}>
           <img src={github} className="w-5" />
           Continue with Github
         </button>
