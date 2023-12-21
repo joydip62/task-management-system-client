@@ -5,6 +5,7 @@ import AboutUs from "../pages/AboutUs/AboutUs";
 import Blog from "../pages/Blog/Blog";
 import ContactUs from "../pages/ContactUs/ContactUs";
 import AddTask from "../pages/Dashboard/AddTask/AddTask";
+import EditTask from "../pages/Dashboard/AllTask/EditTask";
 import TaskManager from "../pages/Dashboard/AllTask/TaskManager";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
 import Home from "../pages/Home/Home/Home";
@@ -79,6 +80,12 @@ export const router = createBrowserRouter([
             <TaskManager />
           </PrivateRoute>
         ),
+      },
+
+      {
+        path: "taskEdit/:id",
+        element: <EditTask />,
+        loader: ({ params }) => fetch(`http://localhost:5000/task/${params.id}`),
       },
     ],
   },

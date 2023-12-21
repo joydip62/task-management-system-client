@@ -1,5 +1,6 @@
 import { Draggable } from "react-beautiful-dnd";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -54,9 +55,11 @@ const Task = ({ task, index, onDelete }) => {
               <FaTrash />
             </button>
 
-            <button className="btn btn-sm btn-accent mr-5">
-              <FaEdit />
-            </button>
+            <Link to={`/dashboard/taskEdit/${task._id}`}>
+              <button className="btn btn-info btn-sm">
+                <FaEdit />
+              </button>
+            </Link>
           </div>
 
           {provided.placeholder}

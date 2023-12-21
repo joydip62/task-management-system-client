@@ -10,37 +10,34 @@ const TaskManager = () => {
   const [todo, setTodo] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [ongoing, setOngoing] = useState([]);
-    const { user } = useAuth();
-    const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
-    const { data: task = [], refetch } = useQuery({
-      queryKey: ["task"],
-      queryFn: async () => {
-        try {
-          const res = await axiosSecure.get("/task");
-          if (res.data) {
-            const userEmail = user?.email;
-            const filteredData = res.data.filter(
-              (item) => item.email === userEmail
-            );
-            // Update todo, completed, and ongoing based on the filtered tasks
-            setTodo(filteredData.filter((task) => task.status === "todo"));
-            setCompleted(
-              filteredData.filter((task) => task.status === "completed")
-            );
-            setOngoing(
-              filteredData.filter((task) => task.status === "ongoing")
-            );
-
-            return filteredData;
-          }
-          return task;
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          return task;
+  const { data: task = [], refetch } = useQuery({
+    queryKey: ["task"],
+    queryFn: async () => {
+      try {
+        const res = await axiosSecure.get("/task");
+        if (res.data) {
+          const userEmail = user?.email;
+          const filteredData = res.data.filter(
+            (item) => item.email === userEmail
+          );
+          // Update todo, completed, and ongoing based on the filtered tasks
+          setTodo(filteredData.filter((task) => task.status === "todo"));
+          setCompleted(
+            filteredData.filter((task) => task.status === "completed")
+          );
+          setOngoing(filteredData.filter((task) => task.status === "ongoing"));
+          return filteredData;
         }
-      },
-    });
+        return task;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        return task;
+      }
+    },
+  });
 
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -90,34 +87,30 @@ const TaskManager = () => {
     return array.filter((item) => item._id != id);
   }
 
-    
-
-
-
-    const handleDelete = (taskId) => {
-      Swal.fire({
-        title: "Are you sure?",
-        text: `You won't be able to revert this!`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          axiosSecure.delete(`/task/${taskId}`).then((res) => {
-            if (res.data.deletedCount > 0) {
-              refetch();
-              Swal.fire({
-                title: "Deleted!",
-                text: "The task has been deleted.",
-                icon: "success",
-              });
-            }
-          });
-        }
-      });
-    };
+  const handleDelete = (taskId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You won't be able to revert this!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/task/${taskId}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            refetch();
+            Swal.fire({
+              title: "Deleted!",
+              text: "The task has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      }
+    });
+  };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
