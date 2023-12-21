@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import { axiosSecure } from "../../../../../../Programming hero/milstone12/assignment/b8a12-client-side-joydip62/src/hooks/useAxiosSecure";
+
 import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const AddTask = () => {
     const { user } = useAuth();
-    
+     const axiosSecure = useAxiosSecure();
       const {
         register,
         handleSubmit,
@@ -20,6 +21,7 @@ const AddTask = () => {
           description: data.description,
           deadlines: data.deadlines,
           priority: data.priority,
+          status: "todo",
           user: user.displayName,
           email: user.email,
         };

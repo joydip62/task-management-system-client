@@ -1,4 +1,4 @@
-import { FaHome, FaPlus, FaUser } from "react-icons/fa";
+import { FaHome, FaPlus, FaTasks, FaUser } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 import Navbar from "../pages/Shares/Navbar/Navbar";
 
@@ -41,6 +41,14 @@ const Dashboard = () => {
                   Add Task
                 </NavLink>
               </li>
+              
+              <li>
+                <NavLink to="/dashboard/allTask">
+                  <FaTasks />
+                  All Task
+                </NavLink>
+              </li>
+
             </>
 
             <div className="divider"></div>
