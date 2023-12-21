@@ -8,6 +8,7 @@ import AddTask from "../pages/Dashboard/AddTask/AddTask";
 import EditTask from "../pages/Dashboard/AllTask/EditTask";
 import TaskManager from "../pages/Dashboard/AllTask/TaskManager";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
+import NotFoundPage from "../pages/Error/NotFoundPage";
 import Home from "../pages/Home/Home/Home";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main />,
-    // errorElement: <NotFoundPage />,
+    errorElement: <NotFoundPage/>,
     children: [
       {
         path: "/",
@@ -85,7 +86,10 @@ export const router = createBrowserRouter([
       {
         path: "taskEdit/:id",
         element: <EditTask />,
-        loader: ({ params }) => fetch(`http://localhost:5000/task/${params.id}`),
+        loader: ({ params }) =>
+          fetch(
+            `https://task-management-system-server-six.vercel.app/task/${params.id}`
+          ),
       },
     ],
   },

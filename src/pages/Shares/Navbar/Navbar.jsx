@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 
@@ -124,7 +124,7 @@ const Navbar = () => {
                   </a>
                 </li>
                 <li>
-                  <a onClick={logout}>Logout</a>
+                  <Link onClick={logout} to="/">Logout</Link>
                 </li>
               </ul>
             </div>
