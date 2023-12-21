@@ -1,9 +1,11 @@
 import { FaHome, FaPlus, FaUser } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
+import Navbar from "../pages/Shares/Navbar/Navbar";
 
 const Dashboard = () => {
   return (
     <div>
+      <Navbar/>
       <div className="drawer lg:drawer-open">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col justify-center">

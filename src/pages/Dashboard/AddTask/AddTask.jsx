@@ -23,7 +23,7 @@ const AddTask = () => {
           user: user.displayName,
           email: user.email,
         };
-          const taskResult = await axiosSecure.post("/addTask", taskData);
+          const taskResult = await axiosSecure.post("/task", taskData);
           console.log(taskResult);
           if (taskResult.data.insertedId) {
             Swal.fire({
