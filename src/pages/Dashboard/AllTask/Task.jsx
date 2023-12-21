@@ -1,41 +1,66 @@
-
 import { Draggable } from "react-beautiful-dnd";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import styled from "styled-components";
 
-const Task = ({ task, onEdit, onDelete, index, draggableId }) => {
-  console.log(draggableId);
+const Container = styled.div`
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px 2px grey;
+  padding: 8px;
+  color: #000;
+  margin-bottom: 8px;
+  min-height: 90px;
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: ${(props) => bgcolorChange(props)};
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+function bgcolorChange(props) {
+  return props.isDragging
+    ? "lightgreen"
+    : props.isDraggable
+    ? props.isBacklog
+      ? "#F2D7D5"
+      : "#DCDCDC"
+    : props.isBacklog
+    ? "#F2D7D5"
+    : "#EAF4FC";
+}
+
+const Task = ({ task, index, onDelete }) => {
   return (
-    <Draggable draggableId={draggableId} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
+    <Draggable draggableId={`${task._id}`} key={task._id} index={index}>
+      {(provided, snapshot) => (
+        <Container
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          isDragging={snapshot.isDragging}
         >
-          <div className="card w-96 bg-base-100 shadow-xl mb-5">
-            <div className="card-body">
-              <h2 className="card-title">{task?.title}</h2>
-              <p>{task?.description}</p>
-              <p>Status: {task?.status}</p>
-              <div className="card-actions justify-start">
-                <div className="badge badge-outline">
-                  Deadline : {task?.deadlines}
-                </div>
-                <div className="badge badge-outline">
-                  Priority : {task?.priority}
-                </div>
-              </div>
-              <div>
-                <button
-                  className="btn btn-sm btn-error mr-5"
-                  onClick={() => onDelete(task._id)}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
+          <div className="text-center">
+            <p>Title : {task.title}</p>
+            <p>Description : {task.description}</p>
+            <p>Deadlines : {task.deadlines}</p>
+            <p>Priority : {task.priority}</p>
+            <p>Status : {task.status}</p>
           </div>
-        </div>
+          <div className="text-center mt-5">
+            <button
+              className="btn btn-sm btn-error mr-5"
+              onClick={() => onDelete(task._id)}
+            >
+              <FaTrash />
+            </button>
+
+            <button className="btn btn-sm btn-accent mr-5">
+              <FaEdit />
+            </button>
+          </div>
+
+          {provided.placeholder}
+        </Container>
       )}
     </Draggable>
   );

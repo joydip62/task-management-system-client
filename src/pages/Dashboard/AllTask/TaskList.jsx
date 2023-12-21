@@ -1,39 +1,72 @@
-import { Draggable, Droppable } from "react-beautiful-dnd";
-import Task from "./Task";
 
-const TaskList = ({
-  title,
-  tasks,
-  onEdit,
-  onDelete,
-}) => {
+import styled from "styled-components";
+import Task from "./Task";
+import "./scroll.css";
+import { Droppable } from "react-beautiful-dnd";
+
+const TaskList = ({ title, tasks, id, onDelete }) => {
+  const Container = styled.div`
+    background-color: #f4f5f7;
+    border-radius: 2.5px;
+    width: 300px;
+    height: 475px;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    border: 1px solid gray;
+  `;
+
+  const TaskList = styled.div`
+    padding: 3px;
+    transistion: background-color 0.2s ease;
+    background-color: #f4f5f7;
+    flex-grow: 1;
+    min-height: 100px;
+  `;
   return (
-    <Droppable droppableId={title.toUpperCase()}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.droppableProps}
-          style={{
-            border: "2px dashed #000",
-            padding: "16px",
-            marginRight: "16px",
-          }}
-        >
-          <h3>{title}</h3>
-          {tasks.map((task, index) => (
-            <Task
-              draggableId={title}
-              key={task._id}
-              task={task}
-              index={index}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
+    // <Droppable droppableId={title.toUpperCase()}>
+    //   {(provided) => (
+    //     <div
+    //       ref={provided.innerRef}
+    //       {...provided.droppableProps}
+    //       style={{
+    //         border: "2px dashed #000",
+    //         padding: "16px",
+    //         marginRight: "16px",
+    //       }}
+    //     >
+    //       <h3>{title}</h3>
+    //       {tasks.map((task, index) => (
+    //         <Task
+    //           draggableId={title}
+    //           key={task._id}
+    //           task={task}
+    //           index={index}
+    //           onEdit={onEdit}
+    //           onDelete={onDelete}
+    //         />
+    //       ))}
+    //       {provided.placeholder}
+    //     </div>
+    //   )}
+    // </Droppable>
+    <Container className="column">
+      <div className="bg-gray-300 font-bold p-2 text-center">{title}</div>
+      <Droppable droppableId={id}>
+        {(provided, snapshot) => (
+          <TaskList
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            isDraggingOver={snapshot.isDraggingOver}
+          >
+            {tasks.map((task, index) => (
+              <Task key={index} index={index} task={task} onDelete={onDelete} />
+            ))}
+            {provided.placeholder}
+          </TaskList>
+        )}
+      </Droppable>
+    </Container>
   );
 };
 

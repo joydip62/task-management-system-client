@@ -3,35 +3,15 @@ import { useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
-import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import TaskList from "./TaskList";
 
 const TaskManager = () => {
+  const [todo, setTodo] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [ongoing, setOngoing] = useState([]);
     const { user } = useAuth();
-    const [tasks, setTasks] = useState([]);
-
     const axiosSecure = useAxiosSecure();
-    const axiosPublic = useAxiosPublic();
-
-    const handleTaskDrop = async (result) => {
-        console.log("Droppable ID:", result.destination?.droppableId);
-        console.log("Draggable ID:", result.draggableId);
-        
-      if (!result.destination) return; // dropped outside the list
-
-      const updatedTasks = [...tasks];
-      const [removed] = updatedTasks.splice(result.source.index, 1);
-      updatedTasks.splice(result.destination.index, 0, removed);
-
-      setTasks(updatedTasks);
-
-      // Make an API call to update the task status
-      await axiosSecure.patch(`/tasks/${removed._id}`, {
-        ...removed,
-        status: getTitleFromType(result.destination.droppableId),
-      });
-    };
 
     const { data: task = [], refetch } = useQuery({
       queryKey: ["task"],
@@ -43,7 +23,15 @@ const TaskManager = () => {
             const filteredData = res.data.filter(
               (item) => item.email === userEmail
             );
-            setTasks(filteredData);
+            // Update todo, completed, and ongoing based on the filtered tasks
+            setTodo(filteredData.filter((task) => task.status === "todo"));
+            setCompleted(
+              filteredData.filter((task) => task.status === "completed")
+            );
+            setOngoing(
+              filteredData.filter((task) => task.status === "ongoing")
+            );
+
             return filteredData;
           }
           return task;
@@ -54,192 +42,115 @@ const TaskManager = () => {
       },
     });
 
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
 
-    // delete task
-     
+    if (!destination || source.droppableId === destination.droppableId) {
+      return;
+    }
+    const task = findItemById(draggableId, [...todo, ...ongoing, ...completed]);
+
+    let updatedSourceList;
+    switch (source.droppableId) {
+      case "1":
+        updatedSourceList = removeItemById(draggableId, todo);
+        setTodo(updatedSourceList);
+        break;
+      case "2":
+        updatedSourceList = removeItemById(draggableId, ongoing);
+        setOngoing(updatedSourceList);
+        break;
+      case "3":
+        updatedSourceList = removeItemById(draggableId, completed);
+        setCompleted(updatedSourceList);
+        break;
+      default:
+        break;
+    }
+    switch (destination.droppableId) {
+      case "1":
+        setTodo([...todo, { ...task, status: "todo" }]);
+        break;
+      case "2":
+        setOngoing([...ongoing, { ...task, status: "ongoing" }]);
+        break;
+      case "3":
+        setCompleted([...completed, { ...task, status: "completed" }]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  function findItemById(id, array) {
+    return array.find((item) => item._id == id);
+  }
+
+  function removeItemById(id, array) {
+    return array.filter((item) => item._id != id);
+  }
+
+    
+
+
+
     const handleDelete = (taskId) => {
-       Swal.fire({
-         title: "Are you sure?",
-         text: `You won't be able to revert this!`,
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
-         confirmButtonText: "Yes, delete it!",
-       }).then((result) => {
-         if (result.isConfirmed) {
-           axiosPublic.delete(`/task/${taskId}`).then((res) => {
-             if (res.data.deletedCount > 0) {
-               refetch();
-               Swal.fire({
-                 title: "Deleted!",
-                 text: "The task has been deleted.",
-                 icon: "success",
-               });
-             }
-           });
-         }
-       });
-     };
-
-    const getTitleFromType = (type) => {
-      switch (type) {
-        case "TO_DO":
-          return "todo";
-        case "ONGOING":
-          return "ongoing";
-        case "COMPLETED":
-          return "completed";
-        default:
-          return "todo";
-      }
+      Swal.fire({
+        title: "Are you sure?",
+        text: `You won't be able to revert this!`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axiosSecure.delete(`/task/${taskId}`).then((res) => {
+            if (res.data.deletedCount > 0) {
+              refetch();
+              Swal.fire({
+                title: "Deleted!",
+                text: "The task has been deleted.",
+                icon: "success",
+              });
+            }
+          });
+        }
+      });
     };
 
-    return (
-      //   <DragDropContext onDragEnd={handleTaskDrop}>
-      //     <div style={{ display: "flex" }}>
-      //       <Droppable droppableId="TO_DO">
-      //         {(provided) => (
-      //           <div
-      //             {...provided.droppableProps}
-      //             ref={provided.innerRef}
-      //             style={{
-      //               border: "2px dashed #000",
-      //               padding: "16px",
-      //               marginRight: "16px",
-      //             }}
-      //           >
-      //             <h3>To-Do</h3>
-      //             {tasks
-      //               .filter((task) => task.status === "todo")
-      //               .map((task, index) => (
-      //                 <Draggable
-      //                   key={task._id}
-      //                   draggableId={task._id}
-      //                   index={index}
-      //                 >
-      //                   {(provided) => (
-      //                     <div
-      //                       ref={provided.innerRef}
-      //                       {...provided.draggableProps}
-      //                       {...provided.dragHandleProps}
-      //                     >
-      //                       <Task
-      //                         task={task}
-      //                         onEdit={() => {}}
-      //                         onDelete={handleDelete}
-      //                       />
-      //                     </div>
-      //                   )}
-      //                 </Draggable>
-      //               ))}
-      //             {provided.placeholder}
-      //           </div>
-      //         )}
-      //       </Droppable>
-
-      //       <Droppable droppableId="ONGOING">
-      //         {(provided) => (
-      //           <div
-      //             {...provided.droppableProps}
-      //             ref={provided.innerRef}
-      //             style={{
-      //               border: "2px dashed #000",
-      //               padding: "16px",
-      //               marginRight: "16px",
-      //             }}
-      //           >
-      //             <h3>Ongoing</h3>
-      //             {tasks
-      //               .filter((task) => task.status === "ongoing")
-      //               .map((task, index) => (
-      //                 <Draggable
-      //                   key={task._id}
-      //                   draggableId={task._id}
-      //                   index={index}
-      //                 >
-      //                   {(provided) => (
-      //                     <div
-      //                       ref={provided.innerRef}
-      //                       {...provided.draggableProps}
-      //                       {...provided.dragHandleProps}
-      //                     >
-      //                       <Task
-      //                         task={task}
-      //                         onEdit={() => {}}
-      //                         onDelete={handleDelete}
-      //                       />
-      //                     </div>
-      //                   )}
-      //                 </Draggable>
-      //               ))}
-      //             {provided.placeholder}
-      //           </div>
-      //         )}
-      //       </Droppable>
-
-      //       <Droppable droppableId="COMPLETED">
-      //         {(provided) => (
-      //           <div
-      //             {...provided.droppableProps}
-      //             ref={provided.innerRef}
-      //             style={{
-      //               border: "2px dashed #000",
-      //               padding: "16px",
-      //               marginRight: "16px",
-      //             }}
-      //           >
-      //             <h3>Completed</h3>
-      //             {tasks
-      //               .filter((task) => task.status === "completed")
-      //               .map((task, index) => (
-      //                 <Draggable
-      //                   key={task._id}
-      //                   draggableId={task._id}
-      //                   index={index}
-      //                 >
-      //                   {(provided) => (
-      //                     <div
-      //                       ref={provided.innerRef}
-      //                       {...provided.draggableProps}
-      //                       {...provided.dragHandleProps}
-      //                     >
-      //                       <Task
-      //                         task={task}
-      //                         onEdit={() => {}}
-      //                         onDelete={handleDelete}
-      //                       />
-      //                     </div>
-      //                   )}
-      //                 </Draggable>
-      //               ))}
-      //             {provided.placeholder}
-      //           </div>
-      //         )}
-      //       </Droppable>
-      //     </div>
-      //   </DragDropContext>
-
-      <DragDropContext onDragEnd={handleTaskDrop}>
-        <div className="grid lg:grid-cols-2 gap-5">
-          <TaskList
-            title="TO_DO"
-            tasks={tasks.filter((task) => task.status === "todo")}
-            onDelete={handleDelete}
-          />
-          <TaskList
-            title="ONGOING"
-            tasks={tasks.filter((task) => task.status === "ongoing")}
-            onDelete={handleDelete}
-          />
-          <TaskList
-            title="COMPLETED"
-            tasks={tasks.filter((task) => task.status === "completed")}
-            onDelete={handleDelete}
-          />
-        </div>
-      </DragDropContext>
-    );
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <h2 className="text-3xl font-bold text-center">TASK PROGRESS</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexDirection: "row",
+        }}
+      >
+        <TaskList
+          title={"TO DO"}
+          tasks={todo}
+          id={"1"}
+          onDelete={handleDelete}
+        />
+        <TaskList
+          title={"ONGOING"}
+          tasks={ongoing}
+          id={"2"}
+          onDelete={handleDelete}
+        />
+        <TaskList
+          title={"COMPLETED"}
+          tasks={completed}
+          id={"3"}
+          onDelete={handleDelete}
+        />
+      </div>
+    </DragDropContext>
+  );
 };
 
 export default TaskManager;

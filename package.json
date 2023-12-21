@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.14.2",
+    "antd": "^5.12.4",
     "aos": "^3.0.0-beta.6",
     "axios": "^1.6.2",
     "firebase": "^10.7.1",
@@ -27,6 +28,7 @@
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.21.0",
     "sort-by": "^1.2.0",
+    "styled-components": "^6.1.2",
     "sweetalert2": "^11.10.1"
   },
   "devDependencies": {
