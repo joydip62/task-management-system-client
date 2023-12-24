@@ -7,9 +7,11 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import TaskList from "./TaskList";
 
 const TaskManager = () => {
-  const [todo, setTodo] = useState([]);
-  const [completed, setCompleted] = useState([]);
-  const [ongoing, setOngoing] = useState([]);
+    const [tasks, setTasks] = useState({
+      todo: [],
+      ongoing: [],
+      completed: [],
+    });
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 
@@ -23,13 +25,13 @@ const TaskManager = () => {
           const filteredData = res.data.filter(
             (item) => item.email === userEmail
           );
-          // Update todo, completed, and ongoing based on the filtered tasks
-          setTodo(filteredData.filter((task) => task.status === "todo"));
-          setCompleted(
-            filteredData.filter((task) => task.status === "completed")
-          );
-          setOngoing(filteredData.filter((task) => task.status === "ongoing"));
-          return filteredData;
+          setTasks({
+            todo: filteredData.filter((task) => task.status === "todo"),
+            ongoing: filteredData.filter((task) => task.status === "ongoing"),
+            completed: filteredData.filter(
+              (task) => task.status === "completed"
+            ),
+          });
         }
         return task;
       } catch (error) {
@@ -45,47 +47,23 @@ const TaskManager = () => {
     if (!destination || source.droppableId === destination.droppableId) {
       return;
     }
-    const task = findItemById(draggableId, [...todo, ...ongoing, ...completed]);
 
-    let updatedSourceList;
-    switch (source.droppableId) {
-      case "1":
-        updatedSourceList = removeItemById(draggableId, todo);
-        setTodo(updatedSourceList);
-        break;
-      case "2":
-        updatedSourceList = removeItemById(draggableId, ongoing);
-        setOngoing(updatedSourceList);
-        break;
-      case "3":
-        updatedSourceList = removeItemById(draggableId, completed);
-        setCompleted(updatedSourceList);
-        break;
-      default:
-        break;
-    }
-    switch (destination.droppableId) {
-      case "1":
-        setTodo([...todo, { ...task, status: "todo" }]);
-        break;
-      case "2":
-        setOngoing([...ongoing, { ...task, status: "ongoing" }]);
-        break;
-      case "3":
-        setCompleted([...completed, { ...task, status: "completed" }]);
-        break;
-      default:
-        break;
-    }
+    const task = tasks[source.droppableId].find((t) => t._id === draggableId);
+
+    const updatedSourceList = tasks[source.droppableId].filter(
+      (t) => t._id !== draggableId
+    );
+    const updatedDestinationList = [
+      ...tasks[destination.droppableId],
+      { ...task, status: destination.droppableId },
+    ];
+
+    setTasks({
+      ...tasks,
+      [source.droppableId]: updatedSourceList,
+      [destination.droppableId]: updatedDestinationList,
+    });
   };
-
-  function findItemById(id, array) {
-    return array.find((item) => item._id == id);
-  }
-
-  function removeItemById(id, array) {
-    return array.filter((item) => item._id != id);
-  }
 
   const handleDelete = (taskId) => {
     Swal.fire({
@@ -124,21 +102,21 @@ const TaskManager = () => {
         }}
       >
         <TaskList
-          title={"TO DO"}
-          tasks={todo}
-          id={"1"}
+          title="TO DO"
+          tasks={tasks.todo}
+          id="todo"
           onDelete={handleDelete}
         />
         <TaskList
-          title={"ONGOING"}
-          tasks={ongoing}
-          id={"2"}
+          title="ONGOING"
+          tasks={tasks.ongoing}
+          id="ongoing"
           onDelete={handleDelete}
         />
         <TaskList
-          title={"COMPLETED"}
-          tasks={completed}
-          id={"3"}
+          title="COMPLETED"
+          tasks={tasks.completed}
+          id="completed"
           onDelete={handleDelete}
         />
       </div>

@@ -35,6 +35,7 @@ const Task = ({ task, index, onDelete }) => {
     <Draggable draggableId={`${task._id}`} key={task._id} index={index}>
       {(provided, snapshot) => (
         <Container
+          className="border-black border-2"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}

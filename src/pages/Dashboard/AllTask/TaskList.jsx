@@ -1,4 +1,3 @@
-
 import styled from "styled-components";
 import Task from "./Task";
 import "./scroll.css";
@@ -24,32 +23,6 @@ const TaskList = ({ title, tasks, id, onDelete }) => {
     min-height: 100px;
   `;
   return (
-    // <Droppable droppableId={title.toUpperCase()}>
-    //   {(provided) => (
-    //     <div
-    //       ref={provided.innerRef}
-    //       {...provided.droppableProps}
-    //       style={{
-    //         border: "2px dashed #000",
-    //         padding: "16px",
-    //         marginRight: "16px",
-    //       }}
-    //     >
-    //       <h3>{title}</h3>
-    //       {tasks.map((task, index) => (
-    //         <Task
-    //           draggableId={title}
-    //           key={task._id}
-    //           task={task}
-    //           index={index}
-    //           onEdit={onEdit}
-    //           onDelete={onDelete}
-    //         />
-    //       ))}
-    //       {provided.placeholder}
-    //     </div>
-    //   )}
-    // </Droppable>
     <Container className="column">
       <div className="bg-gray-300 font-bold p-2 text-center">{title}</div>
       <Droppable droppableId={id}>
