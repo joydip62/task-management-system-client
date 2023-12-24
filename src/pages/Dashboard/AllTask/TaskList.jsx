@@ -15,7 +15,7 @@ const TaskList = ({ title, tasks, id, onDelete }) => {
     border: 1px solid gray;
   `;
 
-  const TaskList = styled.div`
+  const TaskListContainer = styled.div`
     padding: 3px;
     transistion: background-color 0.2s ease;
     background-color: #f4f5f7;
@@ -27,7 +27,7 @@ const TaskList = ({ title, tasks, id, onDelete }) => {
       <div className="bg-gray-300 font-bold p-2 text-center">{title}</div>
       <Droppable droppableId={id}>
         {(provided, snapshot) => (
-          <TaskList
+          <TaskListContainer
             ref={provided.innerRef}
             {...provided.droppableProps}
             isDraggingOver={snapshot.isDraggingOver}
@@ -36,7 +36,7 @@ const TaskList = ({ title, tasks, id, onDelete }) => {
               <Task key={index} index={index} task={task} onDelete={onDelete} />
             ))}
             {provided.placeholder}
-          </TaskList>
+          </TaskListContainer>
         )}
       </Droppable>
     </Container>
